@@ -714,9 +714,16 @@ SCREENS.profile = {
     el.querySelector('[data-act="history"]').onclick = () => reset('history', {}, 'fade');
     el.querySelector('[data-act="mode"]').onclick = () => go('modeChange', {}, 'push');
     el.querySelector('[data-act="logout"]').onclick = () => {
-      S = freshState(S.remember ? { remember: true, mode: S.mode } : {});
-      setMode(S.mode);
-      reset('login', {}, 'fade');
+      const o = overlay(`<div class="copy"><h2>Log out?</h2>
+        <p class="body">You’ll go back to the login screen, and your portfolio and lesson progress will be cleared.</p></div>
+        <div class="two"><button class="press" style="border:1.5px solid var(--accent);color:#fff" data-close>Cancel</button>
+        <button class="press" style="background:var(--accent);color:#171717" data-act="ok">Log out</button></div>`);
+      o.el.querySelector('[data-act="ok"]').onclick = () => {
+        o.close();
+        S = freshState(S.remember ? { remember: true, mode: S.mode } : {});
+        setMode(S.mode);
+        reset('login', {}, 'fade');
+      };
     };
   },
 };
