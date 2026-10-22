@@ -1025,6 +1025,8 @@ phone.addEventListener('click', (e) => {
 
 /* ============ Device frame scaling ============ */
 
+if (window.self !== window.top) document.body.classList.add('embedded');
+
 function fit() {
   const vw = window.innerWidth, vh = window.innerHeight;
   const isPhone = vw < 600 || (matchMedia('(pointer: coarse)').matches && vw < 900);
