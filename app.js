@@ -715,8 +715,8 @@ SCREENS.success = {
       <div class="succ-mark">
         <img class="succ-logo" src="assets/logo.svg" alt="" style="width:137px;height:102px">
       </div>
-      ${celebrate ? `<p class="rise" style="--d:.45s;font-size:36px;font-weight:600;line-height:41px;color:var(--accent)">You did it!</p>
-      <p class="rise" style="--d:.6s;font-size:17px;line-height:22px;color:var(--alt);text-align:center">Congrats, you got your first stock.</p>`
+      ${celebrate ? `<p class="rise" style="--d:.45s;font-size:36px;font-weight:600;line-height:41px;color:#e1e1e1">You did it!</p>
+      <p class="rise" style="--d:.6s;font-size:17px;line-height:22px;color:#afafaf;text-align:center">Congrats, you got your first stock.</p>`
         : `<p class="rise" style="--d:.45s;width:334px;font-size:28px;font-weight:600;line-height:41px;color:#e1e1e1;text-align:center">${side === 'sell' ? 'Sale complete' : 'Purchase complete'}</p>`}
     </div>
     <div class="abs" style="left:0;right:0;top:${celebrate ? 633 : 550}px;display:flex;flex-direction:column;align-items:center;gap:11px">
