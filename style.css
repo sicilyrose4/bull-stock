@@ -292,4 +292,3 @@ button:disabled, .disabled { opacity: .35; pointer-events: none; }
   70% { opacity: 1; }
   100% { opacity: 0; transform: translate(var(--x), calc(var(--y) + 90px)) rotate(var(--r)) scale(1); }
 }
-@media (prefers-reduced-motion: reduce) { .succ-logo, .succ-ring, .rise, .confetti i { animation: none !important; opacity: 1; } .succ-ring, .confetti { display: none; } }
