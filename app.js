@@ -687,7 +687,8 @@ SCREENS.buy = {
     el.querySelector('#go').onclick = () => {
       const { shares, total } = update();
       const run = () => trade(t, side, shares, total);
-      if (S.mode === 'real') confirmReal(side, t, shares, total, run);
+      // Only the first Real Mode purchase asks for confirmation.
+      if (S.mode === 'real' && !a.tx.some((x) => x.side === 'buy')) confirmReal(side, t, shares, total, run);
       else run();
     };
     update();
