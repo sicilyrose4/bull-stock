@@ -267,6 +267,8 @@ SCREENS.login = {
   },
 };
 
+const CONFIDENCE = ['Very unconfident', 'Not confident', 'Fairly confident', 'Confident', 'Very confident'];
+
 SCREENS.questions = {
   html: () => {
     const ready = S.conf && S.income;
@@ -276,8 +278,11 @@ SCREENS.questions = {
     <img class="abs" src="assets/logo-small.svg" alt="" style="left:178px;top:143px;width:83px;height:61.8px">
     <div class="abs" style="left:10px;top:262px;width:416px;display:flex;flex-direction:column;align-items:center;gap:40px">
       <p style="width:350px;text-align:center;font-size:20px;font-weight:600;line-height:26px;color:#f4f3f1">How confident are you with investing in the stock market?</p>
-      <div style="display:flex;gap:20px;height:87px;align-items:flex-start">${[1, 2, 3, 4, 5].map((n) =>
-        `<button class="num press ${S.conf === n ? 'on' : ''}" data-conf="${n}" aria-pressed="${S.conf === n}">${n}</button>`).join('')}</div>
+      <div style="height:87px;display:flex;flex-direction:column;align-items:center;gap:14px">
+        <div style="display:flex;gap:20px">${[1, 2, 3, 4, 5].map((n) =>
+          `<button class="num press ${S.conf && n <= S.conf ? 'on' : ''}" data-conf="${n}" aria-pressed="${S.conf === n}" aria-label="${n}, ${CONFIDENCE[n - 1]}">${n}</button>`).join('')}</div>
+        <p style="font-size:16px;line-height:21px;color:${S.conf ? '#f4f3f1' : '#979797'}">${S.conf ? CONFIDENCE[S.conf - 1] : 'Tap a number'}</p>
+      </div>
     </div>
     <div class="abs" style="left:26px;top:484px;width:387px;display:flex;flex-direction:column;align-items:center;gap:55px">
       <div style="display:flex;flex-direction:column;align-items:center;gap:40px;width:100%">
