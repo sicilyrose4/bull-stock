@@ -274,3 +274,22 @@ button:disabled, .disabled { opacity: .35; pointer-events: none; }
 .type-caret { display: inline-block; width: 2px; height: 34px; margin-left: 3px; vertical-align: -5px; background: var(--accent); animation: blink .9s steps(1) infinite; }
 .key-back { display: flex; align-items: center; justify-content: center; height: 100%; color: #fff; }
 .key-back svg { width: 44px; height: 44px; }
+
+/* Purchase / sale complete screen animation */
+.succ-mark { position: relative; width: 137px; height: 102px; }
+.succ-logo { position: relative; animation: succ-pop .7s cubic-bezier(.3, 1.5, .5, 1) both, succ-nod .6s ease-in-out 1.05s both; transform-origin: 50% 80%; }
+.succ-ring { position: absolute; left: 50%; top: 50%; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; animation: succ-ring 1.1s ease-out .2s; }
+.rise { opacity: 0; animation: succ-rise .55s cubic-bezier(.2, .8, .2, 1) var(--d, 0s) forwards; }
+.confetti { position: absolute; left: 220px; top: 358px; width: 0; height: 0; pointer-events: none; }
+.confetti i { position: absolute; width: var(--w); height: var(--w); margin: calc(var(--w) / -2); border-radius: 2px; background: var(--c); opacity: 0; animation: succ-confetti 1.3s cubic-bezier(.15, .7, .3, 1) forwards; }
+.confetti i:nth-child(odd) { border-radius: 50%; }
+@keyframes succ-pop { 0% { opacity: 0; transform: scale(.3) rotate(-14deg); } 60% { opacity: 1; transform: scale(1.1) rotate(4deg); } 100% { opacity: 1; transform: none; } }
+@keyframes succ-nod { 0%, 100% { transform: none; } 30% { transform: rotate(-6deg); } 65% { transform: rotate(5deg); } }
+@keyframes succ-ring { 0% { opacity: .8; transform: scale(.4); } 100% { opacity: 0; transform: scale(1.9); } }
+@keyframes succ-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes succ-confetti {
+  0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(.6); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), calc(var(--y) + 90px)) rotate(var(--r)) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .succ-logo, .succ-ring, .rise, .confetti i { animation: none !important; opacity: 1; } .succ-ring, .confetti { display: none; } }

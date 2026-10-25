@@ -712,18 +712,38 @@ function trade(t, side, shares, total) {
 SCREENS.success = {
   html: ({ t, side, total, celebrate }) => `
     <div class="abs" style="left:65px;top:307px;width:310px;display:flex;flex-direction:column;align-items:center;gap:31px">
-      <img src="assets/logo.svg" alt="" style="width:137px;height:102px">
-      ${celebrate ? `<p style="font-size:36px;font-weight:600;line-height:41px;color:var(--accent)">You did it!</p>
-      <p style="font-size:17px;line-height:22px;color:var(--alt);text-align:center">Congrats, you got your first stock.</p>`
-        : `<p style="width:334px;font-size:28px;font-weight:600;line-height:41px;color:#e1e1e1;text-align:center">${side === 'sell' ? 'Sale complete' : 'Purchase complete'}</p>`}
+      <div class="succ-mark">
+        <span class="succ-ring"></span><span class="succ-ring" style="animation-delay:.42s"></span>
+        <img class="succ-logo" src="assets/logo.svg" alt="" style="width:137px;height:102px">
+      </div>
+      ${celebrate ? `<p class="rise" style="--d:.45s;font-size:36px;font-weight:600;line-height:41px;color:var(--accent)">You did it!</p>
+      <p class="rise" style="--d:.6s;font-size:17px;line-height:22px;color:var(--alt);text-align:center">Congrats, you got your first stock.</p>`
+        : `<p class="rise" style="--d:.45s;width:334px;font-size:28px;font-weight:600;line-height:41px;color:#e1e1e1;text-align:center">${side === 'sell' ? 'Sale complete' : 'Purchase complete'}</p>`}
     </div>
     <div class="abs" style="left:0;right:0;top:${celebrate ? 633 : 550}px;display:flex;flex-direction:column;align-items:center;gap:11px">
-      <div style="display:flex;align-items:center;gap:12px">${logo(t)}<div class="tick" style="width:auto"><b>${t}</b><span>${esc(STOCKS[t].name)}</span></div></div>
-      <p style="font-size:32px;font-weight:900;line-height:42px;color:#f4f3f1">${cur(total)}</p>
-    </div>`,
-  bind(el) {
+      <div class="rise" style="--d:${celebrate ? .75 : .6}s;display:flex;align-items:center;gap:12px">${logo(t)}<div class="tick" style="width:auto"><b>${t}</b><span>${esc(STOCKS[t].name)}</span></div></div>
+      <p class="rise" id="succAmount" style="--d:${celebrate ? .85 : .7}s;font-size:32px;font-weight:900;line-height:42px;color:#f4f3f1">${cur(0)}</p>
+    </div>
+    ${celebrate ? `<div class="confetti">${Array.from({ length: 28 }, (_, k) => {
+      const ang = (k / 28) * Math.PI * 2 + Math.random() * 0.3, dist = 110 + Math.random() * 90;
+      const color = ['var(--accent)', 'var(--alt)', '#f4f3f1'][k % 3];
+      return `<i style="--x:${Math.cos(ang) * dist}px;--y:${Math.sin(ang) * dist - 40}px;--r:${Math.random() * 540 - 270}deg;--c:${color};--w:${k % 2 ? 6 : 9}px;animation-delay:${0.25 + Math.random() * 0.15}s"></i>`;
+    }).join('')}</div>` : ''}`,
+  bind(el, { total }) {
+    // The amount counts up from zero once it has risen into view.
+    const amount = el.querySelector('#succAmount');
+    setTimeout(() => {
+      const start = performance.now();
+      const step = (now) => {
+        if (!el.isConnected) return;
+        const p = Math.min(1, (now - start) / 700);
+        amount.innerHTML = cur(total * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, 750);
     const done = () => { if (el.isConnected) reset('home', {}, 'fade'); };
-    setTimeout(done, 2600);
+    setTimeout(done, 3400);
     el.onclick = done;
   },
 };
