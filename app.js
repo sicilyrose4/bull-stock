@@ -713,7 +713,6 @@ SCREENS.success = {
   html: ({ t, side, total, celebrate }) => `
     <div class="abs" style="left:65px;top:307px;width:310px;display:flex;flex-direction:column;align-items:center;gap:31px">
       <div class="succ-mark">
-        <span class="succ-ring"></span><span class="succ-ring" style="animation-delay:.42s"></span>
         <img class="succ-logo" src="assets/logo.svg" alt="" style="width:137px;height:102px">
       </div>
       ${celebrate ? `<p class="rise" style="--d:.45s;font-size:36px;font-weight:600;line-height:41px;color:var(--accent)">You did it!</p>
