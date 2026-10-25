@@ -628,13 +628,13 @@ SCREENS.buy = {
       <button class="icon-btn" style="left:12px;top:59px" data-back aria-label="Close">${ICONS.close}</button>
       <p class="abs poppins" style="left:0;right:0;top:56px;text-align:center;font-size:24px;line-height:36px">${side === 'buy' ? 'Buy' : 'Sell'} ${t}</p>
       <div class="abs" id="info" style="left:16px;top:142px;width:408px"></div>
-      <div class="bfield" style="top:210px"><div class="l">Shares <button data-def="shares" aria-label="What is a share?">${ICONS.question}</button></div><div class="r" id="shares">0</div></div>
+      <div class="bfield" id="sharesField" role="textbox" aria-label="Number of shares" style="top:210px"><div class="l">Shares <button data-def="shares" aria-label="What is a share?">${ICONS.question}</button></div><div class="r" id="shares">0</div></div>
       <div class="bfield" style="top:308px"><div class="l">MKT Price <button data-def="price" aria-label="What is market price?">${ICONS.question}</button></div><div class="r">${cur(STOCKS[t].price)}</div></div>
       <button class="btn-pill abs press" id="go" style="left:12px;top:406px;width:416px;height:64px" disabled>${side === 'buy' ? 'Buy' : 'Sell'}</button>
-      ${keys.map((k, i) => `<button class="key" style="left:${14.5 + (i % 3) * 159}px;top:${494 + Math.floor(i / 3) * 101}px" data-key="${k}" aria-label="${k === '#' ? 'Delete' : k}">${k}</button>`).join('')}`;
+      ${keys.map((k, i) => `<button class="key" style="left:${14.5 + (i % 3) * 159}px;top:${494 + Math.floor(i / 3) * 101}px" data-key="${k}" aria-label="${k === '#' ? 'Delete' : k}">${k === '#' ? `<span class="key-back">${ICONS.back}</span>` : k}</button>`).join('')}`;
   },
   bind(el, { t, side = 'buy' }) {
-    let s = '';
+    let s = '', focused = false;
     const price = STOCKS[t].price;
     const a = acct();
     const update = () => {
@@ -643,7 +643,8 @@ SCREENS.buy = {
       const owned = a.hold[t]?.shares || 0;
       const err = side === 'buy' ? total > a.cash && `Not enough funds. You have ${cur(a.cash)} available.`
         : shares > owned + 1e-9 && `You only own ${sharesLabel(owned)} of ${t}.`;
-      el.querySelector('#shares').textContent = s || '0';
+      el.querySelector('#shares').innerHTML = esc(s || '0') + (focused ? '<span class="type-caret"></span>' : '');
+      el.querySelector('#sharesField').classList.toggle('focused', focused);
       el.querySelector('#shares').classList.toggle('has', !!s);
       el.querySelector('#info').innerHTML = `
         <div style="display:flex;justify-content:space-between;font-size:18px;line-height:23px">
@@ -653,16 +654,36 @@ SCREENS.buy = {
       el.querySelector('#go').disabled = !shares || !!err;
       return { shares, total };
     };
-    el.querySelectorAll('[data-key]').forEach((b) => (b.onclick = () => {
-      const k = b.dataset.key;
+    const press = (k) => {
       if (k === '#') s = s.slice(0, -1);
       else if (k === '.') { if (!s.includes('.')) s = (s || '0') + '.'; }
       else {
         const [int, dec] = s.split('.');
         if (dec !== undefined ? dec.length < 4 : (int || '').length < 5) s = s === '0' ? k : s + k;
       }
+      focused = true;
       update();
-    }));
+    };
+    el.querySelectorAll('[data-key]').forEach((b) => (b.onclick = () => press(b.dataset.key)));
+    // Tapping the Shares field shows a blinking cursor; tapping anywhere else (except the keypad) hides it.
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('[data-key], #go')) return;
+      focused = !!e.target.closest('#sharesField') && !e.target.closest('[data-def]');
+      update();
+    });
+    // A physical keyboard works straight away: digits, a decimal point, Backspace/Delete, and Enter to buy.
+    const onKey = (e) => {
+      if (!el.isConnected) { document.removeEventListener('keydown', onKey); return; }
+      if (document.querySelector('.overlay')) return;
+      const digit = /^[0-9]$/.test(e.key) ? e.key : (/^(Digit|Numpad)([0-9])$/.exec(e.code) || [])[2];
+      if (digit) press(digit);
+      else if (e.key === '.' || e.key === ',' || e.code === 'Period' || e.code === 'NumpadDecimal') press('.');
+      else if (e.key === 'Backspace' || e.key === 'Delete') press('#');
+      else if (e.key === 'Enter') el.querySelector('#go').click();
+      else return;
+      e.preventDefault();
+    };
+    document.addEventListener('keydown', onKey);
     el.querySelector('#go').onclick = () => {
       const { shares, total } = update();
       const run = () => trade(t, side, shares, total);

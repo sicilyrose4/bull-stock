@@ -56,7 +56,7 @@ body.is-phone .home-indicator { display: none; }
 .coin svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
 /* ---------- Shared components ---------- */
-.icon-btn { position: absolute; width: 32px; height: 32px; color: var(--accent); }
+.icon-btn { position: absolute; width: 32px; height: 32px; color: var(--accent); z-index: 2; }
 .icon-btn svg { width: 32px; height: 32px; }
 .btn-white { background: #f4f3f1; border: 1px solid #d4d2cd; border-radius: 12px; color: #171717; font-size: 24px; font-weight: 600; height: 49px; display: flex; align-items: center; justify-content: center; }
 .btn-white.solid { background: #fff; border: 0; }
@@ -267,3 +267,10 @@ button:disabled, .disabled { opacity: .35; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .intro > * { animation: none; opacity: 1; } }
 .welcome .caret { display: inline-block; width: 2px; height: 20px; margin-left: 2px; vertical-align: -3px; background: currentColor; animation: blink .8s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
+
+/* Buy screen: tapping the Shares field shows a typing cursor */
+.bfield#sharesField { cursor: text; transition: border-color .15s; }
+.bfield#sharesField.focused { border-color: var(--accent); }
+.type-caret { display: inline-block; width: 2px; height: 34px; margin-left: 3px; vertical-align: -5px; background: var(--accent); animation: blink .9s steps(1) infinite; }
+.key-back { display: flex; align-items: center; justify-content: center; height: 100%; color: #fff; }
+.key-back svg { width: 44px; height: 44px; }
