@@ -703,7 +703,14 @@ function trade(t, side, shares, total) {
   a.cash = Math.round(a.cash * 100) / 100;
   const when = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   a.tx.unshift({ t, side, shares, total, price: STOCKS[t].price, when });
-  go('success', { t, side, shares, total, first }, 'fade');
+  // The "You did it!" celebration is only for the very first Mock Mode purchase.
+  // Every other trade gets a simple confirmation, then returns to the stock.
+  if (side === 'buy' && first && S.mode === 'mock') { go('success', { t, side, shares, total, first }, 'fade'); return; }
+  const name = STOCKS[t].short;
+  const o = overlay(`<div class="copy"><h2>${side === 'buy' ? 'Purchase complete' : 'Sale complete'}</h2>
+    <p class="body">${side === 'buy' ? `${esc(name)} has been added to your portfolio.` : `You sold ${sharesLabel(shares)} of ${esc(name)}.`}</p></div>
+    <button class="thanks press" data-close>Done</button>`, { onClose: () => back() });
+  return o;
 }
 
 SCREENS.success = {
