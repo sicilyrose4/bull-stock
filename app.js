@@ -703,26 +703,21 @@ function trade(t, side, shares, total) {
   a.cash = Math.round(a.cash * 100) / 100;
   const when = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   a.tx.unshift({ t, side, shares, total, price: STOCKS[t].price, when });
-  // The "You did it!" celebration is only for the very first Mock Mode purchase.
-  // Every other trade gets a simple confirmation, then returns to the stock.
-  if (side === 'buy' && first && S.mode === 'mock') { go('success', { t, side, shares, total, first }, 'fade'); return; }
-  const name = STOCKS[t].short;
-  const o = overlay(`<div class="copy"><h2>${side === 'buy' ? 'Purchase complete' : 'Sale complete'}</h2>
-    <p class="body">${side === 'buy' ? `${esc(name)} has been added to your portfolio.` : `You sold ${sharesLabel(shares)} of ${esc(name)}.`}</p></div>
-    <button class="thanks press" data-close>Done</button>`, { onClose: () => back() });
-  return o;
+  go('success', { t, side, total, celebrate: side === 'buy' && first && S.mode === 'mock' }, 'fade');
 }
 
+// "You did it!" only for the first Mock Mode purchase; every other buy or sell
+// shows the same screen with a plain heading (Figma 4062:1988).
 SCREENS.success = {
-  html: ({ t, side, shares, total, first }) => `
+  html: ({ t, side, total, celebrate }) => `
     <div class="abs" style="left:65px;top:307px;width:310px;display:flex;flex-direction:column;align-items:center;gap:31px">
       <img src="assets/logo.svg" alt="" style="width:137px;height:102px">
-      <p style="font-size:36px;font-weight:600;line-height:41px;color:var(--accent)">You did it!</p>
-      <p style="font-size:17px;line-height:22px;color:var(--alt);text-align:center">${side === 'sell' ? `Congrats, you sold ${sharesLabel(shares)} of ${t}.`
-        : first ? 'Congrats, you got your first stock.' : `Congrats, you added ${t} to your portfolio.`}</p>
+      ${celebrate ? `<p style="font-size:36px;font-weight:600;line-height:41px;color:var(--accent)">You did it!</p>
+      <p style="font-size:17px;line-height:22px;color:var(--alt);text-align:center">Congrats, you got your first stock.</p>`
+        : `<p style="width:334px;font-size:28px;font-weight:600;line-height:41px;color:#e1e1e1;text-align:center">${side === 'sell' ? 'Sale complete' : 'Purchase complete'}</p>`}
     </div>
-    <div class="abs" style="left:0;right:0;top:633px;display:flex;flex-direction:column;align-items:center;gap:11px">
-      <div style="display:flex;align-items:center;gap:12px">${logo(t)}<div class="tick" style="width:auto"><b>${t}</b><span>${sharesLabel(shares)}</span></div></div>
+    <div class="abs" style="left:0;right:0;top:${celebrate ? 633 : 550}px;display:flex;flex-direction:column;align-items:center;gap:11px">
+      <div style="display:flex;align-items:center;gap:12px">${logo(t)}<div class="tick" style="width:auto"><b>${t}</b><span>${esc(STOCKS[t].name)}</span></div></div>
       <p style="font-size:32px;font-weight:900;line-height:42px;color:#f4f3f1">${cur(total)}</p>
     </div>`,
   bind(el) {
